@@ -1,5 +1,7 @@
 
 import pygame
+pygame.init()
+font = pygame.font.SysFont("Georgia", 24)
 
 WIDTH, HEIGTH = 600, 600
 screen = pygame.display.set_mode((WIDTH, HEIGTH))
@@ -7,7 +9,7 @@ pygame.display.set_caption('Drag Simulator')
 
 class Ship:
     scale = 1 / 100
-    drag = 0.00001
+    drag = 0.0001
 
     def __init__(self, thrust=10, color=(0, 0, 0)):
         self.thrust = thrust
@@ -49,6 +51,13 @@ class Ship:
         self.dx += self.ddx
         self.dy += self.ddy
         self.ddx, self.ddy = 0, 0
+    
+    def displayInfo(self):
+        speed = self.speed
+        thrust = self.thrust
+        text = f"Speed: {speed:.3f} m/s | Thrust: {thrust}"
+        display = font.render(text, False, (200, 200, 200))
+        screen.blit(display, (10, 10))
 
     def updatePosition(self):
         self.x += self.dx
@@ -90,6 +99,10 @@ def main():
             craft.ignite('s')
         if keys[pygame.K_d]:
             craft.ignite('d')
+        if keys[pygame.K_DOWN]:
+            craft.thrust -= 1
+        if keys[pygame.K_UP]:
+            craft.thrust += 1
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -99,6 +112,7 @@ def main():
         craft.updateSpeed()
         craft.updatePosition()
         craft.draw()
+        craft.displayInfo()
 
         pygame.display.update()
 
