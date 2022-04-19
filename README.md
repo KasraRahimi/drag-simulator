@@ -14,6 +14,5 @@ This project'll make use of the pygame module to display the simualtion.
 * ``a``: Move left
 * ``s``: Move down
 * ``d``: Move right
-
 * ``Up arrow``: Increase thrust
 * ``Down arrow``: Decrease thrust
