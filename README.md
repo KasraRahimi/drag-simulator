@@ -16,3 +16,11 @@ This project'll make use of the pygame module to display the simualtion.
 * ``d``: Move right
 * ``Up arrow``: Increase thrust
 * ``Down arrow``: Decrease thrust
+
+## Getting Started
+To use this simulator, make sure you have python installed. Then you can install it through the terminal with git
+```
+git clone https://github.com/KasraRahimi/drag-simulator.git
+cd drag-simulator
+python drag.py
+```
