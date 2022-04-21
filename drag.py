@@ -8,8 +8,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGTH))
 pygame.display.set_caption('Drag Simulator')
 
 class Ship:
-    scale = 1 / 100
-    drag = 0.0001
+    scale = 1 / 1000
+    drag = 1e-5
+    timestep = 1
 
     def __init__(self, thrust=10, color=(0, 0, 0)):
         self.thrust = thrust
@@ -24,32 +25,33 @@ class Ship:
     @property
     def speed(self):
         dx, dy = self.dx, self.dy
-        return (dx**2 + dy**2)**(1/2)
+        answer = (dx**2 + dy**2)**(1/2)
+        return answer
+
 
     def ignite(self, direction):
         """This method thrusts the ship in the direction
         that is in its parameters. The directions are: w, a, s, d"""
-        match direction:
-            case 'w':
-                self.ddy -= self.thrust
-            case 'a':
-                self.ddx -= self.thrust
-            case 's':
-                self.ddy += self.thrust
-            case 'd':
-                self.ddx += self.thrust
+        if direction == 'w':
+            self.ddy -= self.thrust * self.timestep
+        if direction == 'a':
+            self.ddx -= self.thrust * self.timestep
+        if direction == 's':
+            self.ddy += self.thrust * self.timestep
+        if direction == 'd':
+            self.ddx += self.thrust * self.timestep
 
     def resistance(self, is_on=True):
         if is_on and self.speed > 0:
             speed = self.speed
             dx, dy = self.dx, self.dy
             drag = speed**2 * self.drag
-            self.ddx -= drag * (dx / speed)
-            self.ddy -= drag * (dy / speed)
+            self.ddx -= drag * (dx / speed) * self.timestep
+            self.ddy -= drag * (dy / speed) * self.timestep
     
     def updateSpeed(self):
-        self.dx += self.ddx
-        self.dy += self.ddy
+        self.dx += self.ddx * self.timestep
+        self.dy += self.ddy * self.timestep
         self.ddx, self.ddy = 0, 0
     
     def displayInfo(self):
@@ -60,8 +62,8 @@ class Ship:
         screen.blit(display, (10, 10))
 
     def updatePosition(self):
-        self.x += self.dx
-        self.y += self.dy
+        self.x += self.dx * self.timestep
+        self.y += self.dy * self.timestep
 
     def draw(self):
         
@@ -76,6 +78,8 @@ class Ship:
         elif self.y > HEIGTH / (2 * self.scale):
             self.y = -HEIGTH / (2 * self.scale)
         
+        # these off set the x, y so that (0, 0)
+        # becomes the center of the screen
         x = self.x * self.scale + WIDTH / 2
         y = self.y * self.scale + HEIGTH / 2
         pygame.draw.circle(screen, self.color, (x, y), 10)
@@ -87,7 +91,7 @@ def main():
     craft = Ship(500, (230, 0, 30))
 
     while is_running:
-        clock.tick(30)
+        clock.tick(120)
         screen.fill((0, 0, 0))
 
         keys = pygame.key.get_pressed()
@@ -100,9 +104,9 @@ def main():
         if keys[pygame.K_d]:
             craft.ignite('d')
         if keys[pygame.K_DOWN]:
-            craft.thrust -= 1
+            craft.thrust -= 10 if craft.thrust > 0 else 0
         if keys[pygame.K_UP]:
-            craft.thrust += 1
+            craft.thrust += 10
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
