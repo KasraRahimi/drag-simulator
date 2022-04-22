@@ -28,7 +28,6 @@ class Ship:
         answer = (dx**2 + dy**2)**(1/2)
         return answer
 
-
     def ignite(self, direction):
         """This method thrusts the ship in the direction
         that is in its parameters. The directions are: w, a, s, d"""
